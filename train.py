@@ -35,13 +35,15 @@ transform = transforms.Compose([
     transforms.Normalize((0.485,0.456,0.406), (0.229,0.224,0.225))
 ])
 
-trainset = ListDataset(root='/search/odin/liukuang/data/voc_all_images',
-                       list_file='./data/voc12_train.txt', train=True, transform=transform, input_size=600)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True, num_workers=8, collate_fn=trainset.collate_fn)
+trainset = ListDataset(root='/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/JPEGImages',
+                       list_file='/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/ImageSets/Main/train.txt',
+                       xml_file = '/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/Annotations' ,train=True, transform=transform, input_size=400)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=8, shuffle=True, num_workers=8, collate_fn=trainset.collate_fn)
 
-testset = ListDataset(root='/search/odin/liukuang/data/voc_all_images',
-                      list_file='./data/voc12_val.txt', train=False, transform=transform, input_size=600)
-testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, num_workers=8, collate_fn=testset.collate_fn)
+testset = ListDataset(root='/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/JPEGImages',
+                      list_file='/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/ImageSets/Main/val.txt',
+                      xml_file = '/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/Annotations', train=False, transform=transform, input_size=400)
+testloader = torch.utils.data.DataLoader(testset, batch_size=8, shuffle=False, num_workers=8, collate_fn=testset.collate_fn)
 
 # Model
 net = RetinaNet()
@@ -76,8 +78,8 @@ def train(epoch):
         loss.backward()
         optimizer.step()
 
-        train_loss += loss.data[0]
-        print('train_loss: %.3f | avg_loss: %.3f' % (loss.data[0], train_loss/(batch_idx+1)))
+        train_loss += loss.item()
+        print('train_loss: %.3f | avg_loss: %.3f' % (loss.item(), train_loss/(batch_idx+1)))
 
 # Test
 def test(epoch):
@@ -91,8 +93,8 @@ def test(epoch):
 
         loc_preds, cls_preds = net(inputs)
         loss = criterion(loc_preds, loc_targets, cls_preds, cls_targets)
-        test_loss += loss.data[0]
-        print('test_loss: %.3f | avg_loss: %.3f' % (loss.data[0], test_loss/(batch_idx+1)))
+        test_loss += loss.item()
+        print('test_loss: %.3f | avg_loss: %.3f' % (loss.item(), test_loss/(batch_idx+1)))
 
     # Save checkpoint
     global best_loss
