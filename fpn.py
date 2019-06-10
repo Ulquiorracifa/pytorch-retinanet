@@ -119,7 +119,7 @@ def FPN101():
 
 def test():
     net = FPN50()
-    fms = net(Variable(torch.randn(1,3,600,300)))
+    fms = net(Variable(torch.randn(1,3,400,300)))
     for fm in fms:
         print(fm.size())
 

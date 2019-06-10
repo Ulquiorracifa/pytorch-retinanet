@@ -10,7 +10,11 @@ from PIL import Image, ImageDraw
 
 print('Loading model..')
 net = RetinaNet()
-net.load_state_dict(torch.load('./checkpoint/params.pth'))
+checkpoint = torch.load('./checkpoint/ckpt8.pth')
+net.load_state_dict(checkpoint['net'])
+# best_loss = checkpoint['loss']
+start_epoch = checkpoint['epoch']
+print('start_epoch',start_epoch)
 net.eval()
 
 transform = transforms.Compose([
@@ -19,8 +23,8 @@ transform = transforms.Compose([
 ])
 
 print('Loading image..')
-img = Image.open('./image/000001.jpg')
-w = h = 600
+img = Image.open('/home/asprohy/data/VOC/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/JPEGImages/2007_001288.jpg')
+w = h = 400
 img = img.resize((w,h))
 
 print('Predicting..')
